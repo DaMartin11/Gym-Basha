@@ -1,5 +1,48 @@
 # Agent Instructions
 
+## Product Context
+
+Gym-Basha is a beginner-oriented AI fitness assistant. It should help users start and maintain a fitness routine through simple guidance, AI-powered personalization, automation, progress tracking, and gamification.
+
+The app should reduce common beginner barriers:
+
+- Not knowing where to start
+- Lack of motivation
+- Overwhelming fitness information
+- Difficulty maintaining consistency
+
+The product direction is based on User-Centered Design (UCD) and the Behavior Change Model (COM-B). Prefer workflows that reduce planning effort, give clear next steps, and support long-term adherence.
+
+## Target Architecture
+
+- Frontend: React with Vite, JavaScript / TypeScript, Tailwind CSS / CSS.
+- Backend: Firebase Authentication, Firestore, and Firebase Functions.
+- AI integration: LLM API for workout and meal generation.
+- Automation: n8n workflows for reminders, notifications, inactivity triggers, and weekly summaries.
+- External APIs: ExerciseDB for exercise data and Telegram Bot API for notifications.
+
+## Feature Status
+
+- Authentication and user profile: In Progress.
+- Exercise explorer: In Progress.
+- AI workout plan generator: Not Started.
+- AI meal planning: Not Started.
+- Automated shopping list: Not Started.
+- Progress tracking dashboard: Not Started.
+- Gamification: Not Started.
+- Automation and notifications: Not Started.
+- Telegram integration: Not Started.
+
+## Product Safety And Privacy
+
+- Treat generated fitness and nutrition content as general guidance only.
+- Do not present AI output as medical advice or a replacement for qualified health, fitness, or medical professionals.
+- Favor minimal data collection and consent-based flows.
+- Use secure authentication patterns through Firebase.
+- Keep GDPR considerations in mind when handling user data, profile data, notifications, and integrations.
+
+## Design Source Of Truth
+
 Use `src/docs/design/DESIGN.md` as the source of truth for visual decisions. The product direction is "Kinetic Sanctuary": premium, airy, approachable high-tech, organic, and welcoming rather than aggressive fitness-app styling.
 
 ## Global Tokens
