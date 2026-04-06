@@ -2,7 +2,7 @@
 @import './shared/styles/design-tokens.css';
 
 :root {
-  font: 18px / var(--leading-body) var(--font-body);
+  font: 16px / var(--leading-body) var(--font-body);
   letter-spacing: 0.01em;
   color: var(--color-on-surface-variant);
   background: var(--color-surface);
