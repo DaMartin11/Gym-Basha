@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+@import './styles/design-tokens.css';
+
+:root {
+  font: 18px / var(--leading-body) var(--font-body);
+  letter-spacing: 0.01em;
+  color: var(--color-on-surface-variant);
+  background: var(--color-surface);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--gradient-ambient-surface);
+}
+
+#root {
+  width: var(--size-app-max);
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: rgb(245 247 249 / 0.72);
+  backdrop-filter: var(--blur-glass);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  color: var(--color-on-surface);
+}
+
+h1 {
+  font-size: var(--text-display-lg);
+  font-weight: var(--font-weight-extra-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  margin: var(--space-8) 0 var(--space-4);
+  @media (max-width: 1024px) {
+    margin: var(--space-5) 0 var(--space-3);
+  }
+}
+h2 {
+  font-size: var(--text-headline-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  margin: 0 0 var(--space-2);
+}
+p {
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: var(--text-body-lg);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-body);
+}
+
+code,
+.counter {
+  font-family: var(--font-mono);
+  display: inline-flex;
+  color: var(--color-on-surface);
+}
+
+code {
+  font-size: var(--text-label-md);
+  line-height: var(--leading-body);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-default);
+  background: var(--color-surface-container-low);
+}
