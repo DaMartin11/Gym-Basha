@@ -15,9 +15,18 @@
 }
 
 .dashboard-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   font-family: var(--font-display);
   font-size: var(--text-body-lg);
   font-weight: var(--font-weight-extra-bold);
+}
+
+.dashboard-brand img {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
 }
 
 .dashboard-topnav {

@@ -1,4 +1,8 @@
+import { useMemo } from "react";
+import { auth } from "../../shared/lib/firebase";
 import { logoutUser } from "../auth/services/auth.service";
+import logoImage from "../../assets/Gym-Basha.svg";
+import type { UserProfile } from "@gym-basha/shared";
 import "./dashboard.css";
 
 const topNavItems = ["Dashboard", "Workouts", "Nutrition", "Progress"];
@@ -10,11 +14,31 @@ const sideNavItems = [
   "Preferences",
 ];
 
-export function DashboardPage() {
+type DashboardPageProps = {
+  userProfile: UserProfile | null;
+};
+
+export function DashboardPage({ userProfile }: DashboardPageProps) {
+  const displayName = userProfile?.displayName || auth.currentUser?.displayName || "Athlete";
+  const primaryGoal = useMemo(() => {
+    if (!userProfile?.goals.length) {
+      return "build consistency";
+    }
+
+    return userProfile.goals[0].replaceAll("_", " ");
+  }, [userProfile]);
+
+  const experienceLabel = userProfile?.experienceLevel
+    ? userProfile.experienceLevel.replaceAll("_", " ")
+    : "beginner";
+
   return (
     <main className="dashboard-page">
       <header className="dashboard-topbar">
-        <div className="dashboard-brand">Gym Basha</div>
+        <div className="dashboard-brand">
+          <img src={logoImage} alt="Gym Basha" />
+          <span>Gym Basha</span>
+        </div>
         <nav aria-label="Main navigation">
           <ul className="dashboard-topnav">
             {topNavItems.map((item) => (
@@ -40,12 +64,14 @@ export function DashboardPage() {
           <article className="dashboard-hero">
             <p className="dashboard-kicker">Morning Brief</p>
             <h1>
-              Good Morning, Sarah!
-              <span>Ready for your 15-minute Morning Stretch?</span>
+              Good Morning, {displayName}!
+              <span>
+                Ready to train for your {primaryGoal} goal?
+              </span>
             </h1>
             <p>
-              Your personalized AI path to wellness starts here. Let&apos;s keep your
-              momentum going.
+              Your current level is {experienceLabel}. Your personalized AI path to
+              wellness starts here.
             </p>
             <button type="button">Quick Start Workout</button>
           </article>
@@ -53,7 +79,7 @@ export function DashboardPage() {
           <section className="dashboard-grid">
             <article className="dashboard-card">
               <p className="dashboard-card__label">Today&apos;s Plan</p>
-              <h2>Beginner-Friendly Yoga</h2>
+              <h2>{userProfile?.experienceLevel === "intermediate" ? "Strength Builder" : "Beginner-Friendly Yoga"}</h2>
               <p>20 min - Easy</p>
               <div className="dashboard-card__media dashboard-card__media--workout" />
             </article>
@@ -92,10 +118,11 @@ export function DashboardPage() {
           </section>
 
           <article className="dashboard-insight">
-            <p>&quot;You&apos;re doing great, Sarah!&quot;</p>
+            <p>&quot;You&apos;re doing great, {displayName}!&quot;</p>
             <span>
-              You&apos;ve met your step goal 3 days in a row. Keep this rhythm for a
-              stronger streak.
+              {userProfile?.equipment.length
+                ? `We noted your equipment: ${userProfile.equipment.slice(0, 2).join(", ")}.`
+                : "Add available equipment in onboarding to improve workout personalization."}
             </span>
           </article>
         </section>

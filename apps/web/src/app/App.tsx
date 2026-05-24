@@ -1,42 +1,85 @@
-import { useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { createContext, useCallback, useEffect, useState } from 'react'
 import './App.css'
-import { AuthPage } from '../features/auth/AuthPage'
 import { subscribeToAuthState } from '../features/auth/services/auth.service'
-import { DashboardPage } from '../features/dashboard/DashboardPage'
+import {
+  getUserProfile,
+  isOnboardingComplete,
+} from '../features/auth/services/profile.service'
+import { AppRoutes } from './routes/routes'
+import type { UserProfile } from '@gym-basha/shared'
+
+export const ProfileContext = createContext<{
+  profile: UserProfile | null
+  refreshProfile: () => Promise<void>
+}>({
+  profile: null,
+  refreshProfile: async () => {},
+})
 
 function App() {
-  const [authReady, setAuthReady] = useState(false)
+  const [appReady, setAppReady] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+
+  const refreshProfile = useCallback(async () => {
+    const user = await new Promise<any>((resolve) => {
+      const unsubscribe = subscribeToAuthState((u) => {
+        unsubscribe()
+        resolve(u)
+      })
+    })
+
+    if (!user) {
+      setUserProfile(null)
+      return
+    }
+
+    try {
+      const profile = await getUserProfile(user.uid)
+      setUserProfile(profile)
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error)
+      setUserProfile(null)
+    }
+  }, [])
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthState((user) => {
       setIsAuthenticated(Boolean(user))
-      setAuthReady(true)
+
+      if (!user) {
+        setUserProfile(null)
+        setAppReady(true)
+        return
+      }
+
+      // Show UI immediately, fetch profile in background
+      setAppReady(true)
+
+      // Fetch profile asynchronously (non-blocking)
+      getUserProfile(user.uid)
+        .then((profile) => setUserProfile(profile))
+        .catch((error) => {
+          console.error('Failed to fetch user profile:', error)
+          setUserProfile(null)
+        })
     })
 
     return unsubscribe
   }, [])
 
-  if (!authReady) {
+  if (!appReady) {
     return <main className="app-loading">Checking authentication...</main>
   }
 
   return (
-    <Routes>
-      <Route
-        path="/auth"
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <AuthPage />}
+    <ProfileContext.Provider value={{ profile: userProfile, refreshProfile }}>
+      <AppRoutes
+        isAuthenticated={isAuthenticated}
+        hasProfile={isOnboardingComplete(userProfile)}
+        userProfile={userProfile}
       />
-      <Route
-        path="/dashboard"
-        element={isAuthenticated ? <DashboardPage /> : <Navigate to="/auth" replace />}
-      />
-      <Route
-        path="*"
-        element={<Navigate to={isAuthenticated ? '/dashboard' : '/auth'} replace />}
-      />
-    </Routes>
+    </ProfileContext.Provider>
   )
 }
 
