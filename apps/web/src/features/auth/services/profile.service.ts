@@ -39,8 +39,30 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 export function isOnboardingComplete(profile: UserProfile | null): boolean {
   if (!profile) {
+    console.log('[isOnboardingComplete] No profile found')
     return false
   }
 
-  return profile.goals.length > 0 && Boolean(profile.experienceLevel)
+  const checks = {
+    hasGoals: profile.goals?.length > 0,
+    hasExperience: Boolean(profile.experienceLevel),
+    hasAge: Boolean(profile.age),
+    hasWeight: Boolean(profile.weightKg),
+    hasEquipment: profile.equipment?.length > 0,
+    hasDietary: profile.dietaryPreferences?.length > 0,
+  }
+
+  const isComplete = Object.values(checks).every(Boolean)
+
+  if (!isComplete) {
+    console.log('[isOnboardingComplete] Missing fields:', {
+      profile,
+      checks,
+      missing: Object.entries(checks)
+        .filter(([, ok]) => !ok)
+        .map(([key]) => key),
+    })
+  }
+
+  return isComplete
 }

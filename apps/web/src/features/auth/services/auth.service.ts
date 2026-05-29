@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
   type Unsubscribe,
   type User,
   type UserCredential,
@@ -41,6 +43,17 @@ export function loginWithEmail(
   password: string,
 ): Promise<UserCredential> {
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function signInWithGoogle(): Promise<UserCredential> {
+  const provider = new GoogleAuthProvider();
+ try {
+    const result = await signInWithPopup(auth, provider);
+    return result;
+  } catch (error) {
+    console.error("Google sign-in error:", error);
+    throw error;
+  }
 }
 
 export function logoutUser(): Promise<void> {

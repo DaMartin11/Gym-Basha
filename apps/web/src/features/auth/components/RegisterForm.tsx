@@ -1,10 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { registerWithEmail } from "../services/auth.service";
 import { AuthField } from "./AuthField";
+import { useNavigate } from "react-router-dom";
 
-type RegisterFormProps = {
-  onRegistrationComplete: () => void;
-};
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -14,7 +12,8 @@ function getErrorMessage(error: unknown): string {
   return "Unable to create account right now. Please try again.";
 }
 
-export function RegisterForm({ onRegistrationComplete }: RegisterFormProps) {
+export function RegisterForm() {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +38,7 @@ export function RegisterForm({ onRegistrationComplete }: RegisterFormProps) {
         email: email.trim(),
         password,
       });
-      onRegistrationComplete();
+      navigate("/onboarding", { replace: true });
     } catch (submitError) {
       setError(getErrorMessage(submitError));
     } finally {

@@ -115,6 +115,30 @@ export function OnboardingPage() {
       return;
     }
 
+    if (!formData.age || formData.age < 13 || formData.age > 120) {
+      setError("Please enter a valid age (13-120).");
+      return;
+    }
+
+    if (
+      !formData.weightKg ||
+      formData.weightKg < 30 ||
+      formData.weightKg > 300
+    ) {
+      setError("Please enter a valid weight (30-300 kg).");
+      return;
+    }
+
+    if (!formData.equipment.length) {
+      setError("Please select at least one equipment option.");
+      return;
+    }
+
+    if (!formData.dietaryPreferences.length) {
+      setError("Please select at least one dietary preference.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

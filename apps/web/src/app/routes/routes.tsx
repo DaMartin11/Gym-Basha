@@ -8,13 +8,21 @@ type AppRoutesProps = {
   isAuthenticated: boolean;
   hasProfile: boolean;
   userProfile: UserProfile | null;
+  profileError: string | null;
 };
 
 export function AppRoutes({
   isAuthenticated,
   hasProfile,
   userProfile,
+  profileError,
 }: AppRoutesProps) {
+  // If profile fetch failed, don't auto-route. Stay on current page or show error.
+  // Error UI is handled in App.tsx
+  if (isAuthenticated && profileError) {
+    return null // App.tsx shows error UI
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/auth" replace />} />

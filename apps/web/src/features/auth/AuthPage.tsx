@@ -2,7 +2,27 @@ import { useState } from "react";
 import logoImage from "../../assets/Gym-Basha.svg";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
+import { signInWithGoogle } from "./services/auth.service";
 import "./auth.css";
+
+function getSocialErrorMessage(error: unknown): string {
+  if (error && typeof error === "object" && "code" in error) {
+    const code = (error as { code: string }).code;
+    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+      return "";
+    }
+    if (code === "auth/popup-blocked") {
+      return "Popup was blocked. Please allow popups and try again.";
+    }
+    if (code === "auth/account-exists-with-different-credential") {
+      return "An account already exists with this email using a different sign-in method.";
+    }
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unable to sign in with Google. Please try again.";
+}
 
 type AuthMode = "sign-in" | "create-account";
 
@@ -123,6 +143,21 @@ function AuthPanel({
 }) {
   const isCreateAccount = mode === "create-account";
   const alternateMode = isCreateAccount ? "sign-in" : "create-account";
+  const [isGoogleBusy, setIsGoogleBusy] = useState(false);
+  const [socialError, setSocialError] = useState("");
+
+  async function handleGoogleSignIn() {
+    setSocialError("");
+    setIsGoogleBusy(true);
+    try {
+      await signInWithGoogle();
+      // Auth listener in App.tsx handles routing to /onboarding or /dashboard.
+    } catch (error) {
+      setSocialError(getSocialErrorMessage(error));
+    } finally {
+      setIsGoogleBusy(false);
+    }
+  }
 
   return (
     <section className="auth-panel" aria-labelledby="auth-title">
@@ -151,7 +186,7 @@ function AuthPanel({
       </div>
 
       {isCreateAccount ? (
-        <RegisterForm onRegistrationComplete={() => onModeChange("sign-in")} />
+        <RegisterForm/>
       ) : (
         <LoginForm />
       )}
@@ -161,16 +196,20 @@ function AuthPanel({
       </div>
 
       <div className="auth-social-actions">
-        <button type="button">
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isGoogleBusy}
+        >
           <span
             className="auth-social-icon auth-social-icon--google"
             aria-hidden="true"
           >
             G
           </span>
-          Google
+          {isGoogleBusy ? "Connecting..." : "Google"}
         </button>
-        <button type="button">
+        <button type="button" disabled={isGoogleBusy}>
           <span
             className="auth-social-icon auth-social-icon--apple"
             aria-hidden="true"
@@ -180,6 +219,10 @@ function AuthPanel({
           Apple
         </button>
       </div>
+
+      {socialError ? (
+        <p className="auth-form-feedback auth-form-feedback--error">{socialError}</p>
+      ) : null}
 
       <p className="auth-switch-prompt">
         {copy.switchPrompt}{" "}

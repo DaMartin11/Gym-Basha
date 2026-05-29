@@ -1,10 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginWithEmail } from "../services/auth.service";
-import {
-  getUserProfile,
-  isOnboardingComplete,
-} from "../services/profile.service";
 import { AuthField } from "./AuthField";
 
 function getErrorMessage(error: unknown): string {
@@ -28,14 +24,8 @@ export function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const credential = await loginWithEmail(email.trim(), password);
-      const profile = await getUserProfile(credential.user.uid);
-
-      if (isOnboardingComplete(profile)) {
-        navigate("/dashboard", { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
+      await loginWithEmail(email.trim(), password);
+      navigate("/dashboard", { replace: true });
     } catch (submitError) {
       setError(getErrorMessage(submitError));
     } finally {
