@@ -94,8 +94,10 @@ function App() {
     await loadProfile(user.uid)
   }
 
-  // Show loading only on initial load
-  if (!authReady) {
+  // Show loading until auth is ready, and (for signed-in users) until the
+  // profile has resolved — otherwise the routes briefly render with
+  // hasProfile=false and flash the onboarding page before redirecting.
+  if (!authReady || (isAuthenticated && profileLoading && !profileError)) {
     return <div className="app-loading">Loading...</div>
   }
 
