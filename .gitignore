@@ -14,6 +14,11 @@ apps/functions/lib
 *.tsbuildinfo
 *.local
 
+# Environment variables - NEVER commit
+.env
+.env.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

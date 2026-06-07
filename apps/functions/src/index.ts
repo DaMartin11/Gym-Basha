@@ -1,7 +1,3 @@
-export const registerFunctions = () => ({
-  auth: 'pending',
-  plans: 'pending',
-  notifications: 'pending',
-  integrations: 'pending',
-  privacy: 'pending',
-})
+import { generateWorkoutPlanEndpoint } from './plans/createPlanEndpoint.js'
+
+export { generateWorkoutPlanEndpoint }

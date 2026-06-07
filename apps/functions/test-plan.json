@@ -1,0 +1,18 @@
+{
+  "userProfile": {
+    "id": "test",
+    "displayName": "John",
+    "age": 28,
+    "weightKg": 75,
+    "goals": ["build_strength"],
+    "experienceLevel": "beginner",
+    "equipment": ["Dumbbells"],
+    "dietaryPreferences": ["No restrictions"],
+    "notificationPreference": {
+      "remindersEnabled": true,
+      "weeklySummaryEnabled": true,
+      "telegramEnabled": false
+    }
+  },
+  "userId": "test-user-123"
+}
