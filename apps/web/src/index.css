@@ -23,10 +23,8 @@ body {
 }
 
 #root {
-  width: var(--size-app-max);
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
+  width: 100%;
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

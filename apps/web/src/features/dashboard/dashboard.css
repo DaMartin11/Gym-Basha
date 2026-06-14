@@ -113,11 +113,13 @@
    ============================================ */
 .dashboard-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 18rem;
-  gap: var(--space-5);
-  padding: var(--space-5);
-  max-width: 1400px;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 1800px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .dashboard-main {
@@ -612,28 +614,23 @@
 
 @media (max-width: 768px) {
   .dashboard-topbar {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    grid-template-columns: auto 1fr auto;
     gap: var(--space-3);
-    text-align: center;
+    padding: var(--space-3) var(--space-4);
   }
 
   .dashboard-topnav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .dashboard-signout {
-    order: 2;
+    display: none;
   }
 
   .dashboard-shell {
-    padding: var(--space-4);
+    padding: var(--space-3);
+    gap: var(--space-3);
   }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 
   .dashboard-card--activity {
@@ -641,30 +638,48 @@
   }
 
   .dashboard-hero {
-    padding: var(--space-6);
+    padding: var(--space-5);
+    min-height: auto;
+  }
+
+  .dashboard-sidebar {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-topbar {
+    padding: var(--space-3);
+  }
+
+  .dashboard-brand span {
+    display: none;
+  }
+
+  .dashboard-shell {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .dashboard-hero {
+    padding: var(--space-4);
+  }
+
+  .dashboard-hero h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-hero__cta {
+    width: 100%;
+    justify-content: center;
   }
 
   .dashboard-sidebar {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 480px) {
-  .dashboard-topnav {
-    gap: var(--space-1);
-  }
-
-  .dashboard-topnav a {
-    padding: var(--space-2) var(--space-3);
-    font-size: 0.6875rem;
-  }
-
-  .dashboard-hero {
-    padding: var(--space-5);
-  }
-
-  .dashboard-hero h1 {
-    font-size: 1.5rem;
+  .dashboard-stat {
+    padding: var(--space-2) 0;
   }
 }
 
@@ -690,4 +705,10 @@
 .dashboard-sidebar__coach ul li:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+.dashboard-plan-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: #dc2626;
 }

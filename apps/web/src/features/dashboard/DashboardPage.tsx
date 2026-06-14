@@ -30,6 +30,8 @@ import {
   TrendingUpIcon,
   WeightScaleIcon,
 } from "./icons";
+import { usePlan } from "../plans/hooks/usePlan";
+import { WorkoutPlanCard } from "../plans/components/WorkoutPlanCard";
 import "./dashboard.css";
 
 type DashboardPageProps = {
@@ -87,6 +89,8 @@ export function DashboardPage({ userProfile }: DashboardPageProps) {
 
   const greeting = useMemo(() => getTimeOfDayGreeting(), []);
   const timeIcon = useMemo(() => getTimeOfDayIcon(), []);
+
+  const { state, latestPlan, generate } = usePlan(userProfile);
 
   const primaryGoal = userProfile?.goals[0];
   const primaryGoalLabel = primaryGoal
@@ -168,15 +172,40 @@ export function DashboardPage({ userProfile }: DashboardPageProps) {
               <div className="dashboard-card__icon">
                 <CalendarIcon />
               </div>
-              <p className="dashboard-card__label">Today&apos;s Plan</p>
-              <h2>Personalized plan coming soon</h2>
-              <p>
-                We&apos;ll generate a plan tailored to your{" "}
-                {primaryGoalLabel.toLowerCase()} goal and{" "}
-                {experienceLabel.toLowerCase()} level.
-              </p>
+              <p className="dashboard-card__label">Workout Plan</p>
+              {latestPlan ? (
+                <WorkoutPlanCard plan={latestPlan} />
+              ) : (
+                <>
+                  <h2>No plan yet</h2>
+                  <p>
+                    Generate a plan tailored to your{" "}
+                    {primaryGoalLabel.toLowerCase()} goal and{" "}
+                    {experienceLabel.toLowerCase()} level.
+                  </p>
+                </>
+              )}
               <div className="dashboard-card__footer">
-                <span className="dashboard-card__badge">Coming Soon</span>
+                <button
+                  type="button"
+                  className="dashboard-hero__cta"
+                  onClick={() => void generate()}
+                  disabled={
+                    state.status === "generating" || state.status === "loading"
+                  }
+                >
+                  <PlayIcon />
+                  {state.status === "generating"
+                    ? "Generating…"
+                    : state.status === "loading"
+                      ? "Loading…"
+                      : latestPlan
+                        ? "Regenerate Plan"
+                        : "Generate My Plan"}
+                </button>
+                {state.status === "error" && (
+                  <p className="dashboard-plan-error">{state.message}</p>
+                )}
               </div>
             </article>
 

@@ -1,5 +1,10 @@
 import { callLLM, parseLLMJSON } from '../integrations/llm.js'
-import type { UserProfile, FitnessGoal, WorkoutPlan } from '@gym-basha/shared'
+import type {
+  UserProfile,
+  FitnessGoal,
+  WorkoutPlan,
+  WorkoutExercise,
+} from '@gym-basha/shared'
 
 // Internal types for LLM response structure
 export interface LLMExercise {
@@ -70,13 +75,20 @@ export function transformToStoragePlan(
       id: `${userId}-${day.day.toLowerCase()}`,
       title: day.focus,
       scheduledDay: day.day,
-      exercises: day.exercises.map((ex) => ({
-        exerciseId: ex.name.toLowerCase().replace(/\s+/g, '-'),
-        sets: ex.sets,
-        reps: parseInt(ex.reps.split('-')[0], 10) || undefined,
-        durationSeconds: undefined,
-        restSeconds: ex.restSeconds,
-      })),
+      exercises: day.exercises.map((ex) => {
+        const parsedReps = parseInt(ex.reps.split('-')[0], 10)
+        const exercise: WorkoutExercise = {
+          exerciseId: ex.name.toLowerCase().replace(/\s+/g, '-'),
+          sets: ex.sets,
+          restSeconds: ex.restSeconds,
+        }
+        // Only include reps when it parses to a valid number; Firestore
+        // rejects undefined values, so omit the field otherwise.
+        if (!Number.isNaN(parsedReps)) {
+          exercise.reps = parsedReps
+        }
+        return exercise
+      }),
     })),
   }
 }

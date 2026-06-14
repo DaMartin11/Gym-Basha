@@ -1,4 +1,12 @@
-import { auth } from '../../../shared/lib/firebase'
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+} from 'firebase/firestore'
+import { auth, db } from '../../../shared/lib/firebase'
 import type { UserProfile, WorkoutPlan } from '@gym-basha/shared'
 
 export interface LLMGeneratedPlan {
@@ -33,54 +41,65 @@ interface GeneratePlanResponse {
   error?: string
 }
 
+const FUNCTIONS_BASE_URL = import.meta.env.DEV
+  ? 'http://127.0.0.1:5001/demo-no-project/us-central1'
+  : `https://us-central1-${import.meta.env.VITE_FIREBASE_PROJECT_ID}.cloudfunctions.net`
+
 /**
- * Call the Cloud Function to generate a personalized workout plan
- * Returns both the AI-generated plan and storage-ready plan
+ * Call the Cloud Function to generate a personalized workout plan, then
+ * persist it to Firestore under the current user (client-side write, same
+ * pattern as the user profile).
  */
-export async function generateWorkoutPlan(
-  userProfile: UserProfile
-): Promise<{
+export async function generateWorkoutPlan(userProfile: UserProfile): Promise<{
   generated: LLMGeneratedPlan
-  storagePlan: Omit<WorkoutPlan, 'id'>
+  saved: WorkoutPlan
 }> {
-  try {
-    const user = auth.currentUser
-    if (!user) {
-      throw new Error('User not authenticated')
-    }
+  const user = auth.currentUser
+  if (!user) throw new Error('User not authenticated')
 
-    // Get the Cloud Functions base URL
-    // For local emulation: http://localhost:5001/project-id/region/generateWorkoutPlanEndpoint
-    // For production: Firebase automatically handles routing
-    const response = await fetch(
-      `${window.location.origin}/api/generateWorkoutPlan`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userProfile,
-          userId: user.uid,
-        }),
-      }
-    )
+  const response = await fetch(`${FUNCTIONS_BASE_URL}/generateWorkoutPlanEndpoint`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userProfile, userId: user.uid }),
+  })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
+  const data: GeneratePlanResponse = await response.json()
 
-    const data: GeneratePlanResponse = await response.json()
-
-    if (!data.success || !data.data) {
-      throw new Error(data.error || 'Failed to generate workout plan')
-    }
-
-    return data.data
-  } catch (error) {
-    console.error('Failed to generate workout plan:', error)
-    throw error instanceof Error
-      ? error
-      : new Error('Unknown error generating workout plan')
+  if (!data.success || !data.data) {
+    throw new Error(data.error ?? 'Failed to generate workout plan')
   }
+
+  const saved = await saveWorkoutPlan(user.uid, data.data.storagePlan)
+
+  return { generated: data.data.generated, saved }
+}
+
+/**
+ * Save a generated plan to Firestore under users/{uid}/workoutPlans.
+ */
+async function saveWorkoutPlan(
+  uid: string,
+  plan: Omit<WorkoutPlan, 'id'>,
+): Promise<WorkoutPlan> {
+  const plansRef = collection(db, 'users', uid, 'workoutPlans')
+  const docRef = await addDoc(plansRef, {
+    ...plan,
+    createdAt: serverTimestamp(),
+  })
+
+  return { id: docRef.id, ...plan }
+}
+
+/**
+ * Fetch all saved workout plans for the current user from Firestore.
+ */
+export async function getUserWorkoutPlans(): Promise<WorkoutPlan[]> {
+  const user = auth.currentUser
+  if (!user) throw new Error('User not authenticated')
+
+  const plansRef = collection(db, 'users', user.uid, 'workoutPlans')
+  const q = query(plansRef, orderBy('createdAt', 'desc'))
+  const snapshot = await getDocs(q)
+
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as WorkoutPlan)
 }

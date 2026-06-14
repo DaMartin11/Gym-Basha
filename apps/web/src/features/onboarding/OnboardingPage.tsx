@@ -1,4 +1,4 @@
-import { useContext, useState, type FormEvent } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../shared/lib/firebase";
 import { createUserProfile } from "../auth/services/profile.service";
@@ -101,7 +101,7 @@ export function OnboardingPage() {
   const currentStepIndex = steps.indexOf(currentStep);
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
@@ -204,7 +204,7 @@ export function OnboardingPage() {
           <div className="onboarding-progress">
             <div
               className="onboarding-progress__bar"
-              style={{ width: `${progress}%` }}
+              style={{ '--progress': `${progress}%` } as React.CSSProperties}
             />
           </div>
           <p className="onboarding-progress__text">

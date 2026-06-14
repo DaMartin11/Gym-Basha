@@ -105,23 +105,14 @@ function App() {
   if (isAuthenticated && profileError) {
     return (
       <div className="app-loading">
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <div className="app-error">
           <p>Couldn't load your profile</p>
-          <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>
-            {profileError}
-          </p>
+          <p className="app-error__message">{profileError}</p>
           <button
+            className="app-error__retry"
             onClick={() => {
               const user = auth.currentUser
               if (user) void loadProfile(user.uid)
-            }}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: '#426500',
-              color: 'white',
-              cursor: 'pointer',
             }}
           >
             Retry
