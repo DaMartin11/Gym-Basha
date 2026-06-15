@@ -26,6 +26,8 @@ export type Exercise = {
   equipment?: string
   difficulty: ExperienceLevel
   instructions?: string[]
+  bodyPart?: string
+  imageUrl?: string
 }
 
 export type WorkoutPlan = {

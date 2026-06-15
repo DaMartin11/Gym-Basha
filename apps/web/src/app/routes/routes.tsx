@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthPage } from "../../features/auth/AuthPage";
 import { OnboardingPage } from "../../features/onboarding/OnboardingPage";
 import { DashboardPage } from "../../features/dashboard/DashboardPage";
+import { ExerciseExplorerPage } from "../../features/exercise-explorer/ExerciseExplorerPage";
 import type { UserProfile } from "@gym-basha/shared";
 
 type AppRoutesProps = {
@@ -61,6 +62,18 @@ export function AppRoutes({
             <Navigate to="/onboarding" replace />
           ) : (
             <DashboardPage userProfile={userProfile} />
+          )
+        }
+      />
+      <Route
+        path="/exercises"
+        element={
+          !isAuthenticated ? (
+            <Navigate to="/auth" replace />
+          ) : !hasProfile ? (
+            <Navigate to="/onboarding" replace />
+          ) : (
+            <ExerciseExplorerPage />
           )
         }
       />

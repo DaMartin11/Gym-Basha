@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { auth } from "../../shared/lib/firebase";
 import { logoutUser } from "../auth/services/auth.service";
 import logoImage from "../../assets/Gym-Basha.svg";
@@ -109,9 +110,10 @@ export function DashboardPage({ userProfile }: DashboardPageProps) {
           <span>Gym Basha</span>
         </div>
         <nav className="dashboard-topnav" aria-label="Main navigation">
-          <a href="#dashboard" className="is-active">
+          <Link to="/dashboard" className="is-active">
             Dashboard
-          </a>
+          </Link>
+          <Link to="/exercises">Exercises</Link>
           <a href="#workouts">Workouts</a>
           <a href="#nutrition">Nutrition</a>
           <a href="#progress">Progress</a>

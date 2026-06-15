@@ -30,3 +30,4 @@ apps/functions/lib
 *.sln
 *.sw?
 .claude
+.agents
